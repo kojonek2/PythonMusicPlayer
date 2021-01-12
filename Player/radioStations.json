@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Radio Zet",
+    "streamURL": "https://n-4-14.dcs.redcdn.pl/sc/o2/Eurozet/live/audio.livx",
+    "imagePath": "Images/radio_zet.jpg"
+  },
+  {
+    "name": "RMF FM",
+    "streamURL": "https://rs9-krk2-cyfronet.rmfstream.pl/RMFFM48",
+    "imagePath": "Images/rmf.png"
+  },
+   {
+    "name": "RMF MAXXX",
+    "streamURL": "https://rs102-krk-cyfronet.rmfstream.pl/RMFMAXXX48",
+    "imagePath": "Images/rmf_maxxx.png"
+  },
+   {
+    "name": "Antyradio",
+    "streamURL": "https://an03.cdn.eurozet.pl/ant-waw.mp3",
+    "imagePath": "Images/antyradio.jpg"
+  }
+]
