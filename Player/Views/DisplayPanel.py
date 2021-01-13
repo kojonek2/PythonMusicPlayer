@@ -1,9 +1,11 @@
 from tkinter import Frame, Label, CENTER
 
+from Controllers.IMusicController import IMusicController
 from Controllers.IOnlineRadiosController import IOnlineRadiosController
 from Models.DisplayViewStatus import DisplayViewStatus
 from Models.DisplayedView import DisplayedView
 from Models.Listeners.IDisplayViewUpdatedListener import IDisplayViewUpdatedListener
+from Views.MusicPanel import MusicPanel
 from Views.OnlineRadiosPanel import OnlineRadiosPanel
 
 WELCOME_TEXT = 'Welcome to Song Player application!'
@@ -15,11 +17,15 @@ class DisplayPanel(Frame, IDisplayViewUpdatedListener):
 
         self.welcomePanel: Frame = None
         self.radioPanel: OnlineRadiosPanel = None
+        self.musicPanel: MusicPanel = None
 
         self.__viewInit()
 
     def setOnlineRadiosController(self, radioController: IOnlineRadiosController):
         self.radioPanel = OnlineRadiosPanel(self, radioController)
+
+    def setMusicController(self, musicController: IMusicController):
+        self.musicPanel = MusicPanel(self, musicController)
 
     def __viewInit(self):
         self.grid_columnconfigure(0, weight=1)
@@ -38,3 +44,6 @@ class DisplayPanel(Frame, IDisplayViewUpdatedListener):
         elif status.currentDisplayedView is DisplayedView.ONLINE_RADIOS and self.radioPanel is not None:
             self.radioPanel.grid(row=0, column=0, sticky='NSWE')
             self.radioPanel.displayRadios(status.radioStations)
+        elif status.currentDisplayedView is DisplayedView.MUSIC_SCREEN and self.musicPanel is not None:
+            self.musicPanel.grid(row=0, column=0, sticky='NSWE')
+            self.musicPanel.displayMusic(status.music)

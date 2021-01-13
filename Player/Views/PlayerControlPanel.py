@@ -1,14 +1,16 @@
-from tkinter import Button, Label, RIDGE, Frame, Scale, HORIZONTAL
+from tkinter import Button, Label, RIDGE, Frame, Scale, HORIZONTAL, DISABLED
+from tkinter.ttk import Progressbar
 
 from PIL.ImageTk import PhotoImage
 from PIL import Image
 
 from Controllers.IPlayerController import IPlayerController
 from Models.Listeners.IPlayerStateListener import IPlayerStateListener
-from Models.PlayerState import PlayerState
+from Models.PlayerState import PlayerState, TrackType, PlaybackState
 
 HEIGHT = 100
 PLAY_ICON = 'Images/play_icon.png'
+PROGREESBAR_MULTIPLAYER = 5
 
 
 class PlayerControlPanel(Frame, IPlayerStateListener):
@@ -37,8 +39,22 @@ class PlayerControlPanel(Frame, IPlayerStateListener):
         self.volumeScale.set(50)
         self.volumeScale.grid(row=0, column=2)
 
+        self.trackProgressBar = Progressbar(self, orient=HORIZONTAL, length=300, mode='determinate')
+        self.trackProgressBar.grid(row=0, column=3)
+
     def onPlayerStateUpdated(self, state: PlayerState):
         self.trackNameLabel.configure(text=state.trackName)
+
+        if state.trackType is TrackType.MUSIC:
+            self.trackProgressBar.configure(maximum=state.trackLength * PROGREESBAR_MULTIPLAYER, value=state.trackPosition * PROGREESBAR_MULTIPLAYER)
+            if state.playbackState is PlaybackState.PLAYING:
+                self.trackProgressBar.start(int(1000 / PROGREESBAR_MULTIPLAYER))
+            else:
+                self.trackProgressBar.stop()
+
+        else:
+            self.trackProgressBar.stop()
+            self.trackProgressBar.configure(value=0)
 
     def setPlayerController(self, playerController: IPlayerController):
         self.volumeScale.configure(command=lambda v: playerController.onVolumeSelected(self.volumeScale.get()))

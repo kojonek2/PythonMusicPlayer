@@ -4,7 +4,10 @@ from Models.DisplayViewStatus import DisplayViewStatus
 from Models.DisplayedView import DisplayedView
 from Models.Listeners.IDisplayViewUpdatedListener import IDisplayViewUpdatedListener
 from Models.Listeners.IDisplayViewUpdatedObservable import IDisplayViewUpdatedObservable
+from Models.Music import Music
 from Models.RadioStation import RadioStation
+
+from win32com.shell import shell, shellcon
 
 import json
 import os
@@ -13,6 +16,7 @@ RADIO_STATIONS_FILE = 'radioStations.json'
 NAME_KEY = 'name'
 STREAM_URL_KEY = 'streamURL'
 PATH_TO_IMAGE_KEY = 'imagePath'
+MUSIC_FILE_EXTENSIONS = ['.mp3', '.wav']
 
 class MainModel(IDisplayViewUpdatedObservable):
 
@@ -21,6 +25,7 @@ class MainModel(IDisplayViewUpdatedObservable):
         self.currentDisplayStatus = DisplayViewStatus()
 
     def displayRadioSelection(self):
+        self.currentDisplayStatus.clear()
         self.currentDisplayStatus.currentDisplayedView = DisplayedView.ONLINE_RADIOS
         self.currentDisplayStatus.radioStations = self.readRadioStations()
         self.__notifyDisplayViewUpdated()
@@ -53,8 +58,24 @@ class MainModel(IDisplayViewUpdatedObservable):
         except:
             return None
 
+    def displayMusicSelection(self):
+        self.currentDisplayStatus.clear()
+        self.currentDisplayStatus.currentDisplayedView = DisplayedView.MUSIC_SCREEN
+        self.currentDisplayStatus.music = self.musicFiles()
+        self.__notifyDisplayViewUpdated()
 
+    def musicFiles(self) -> List[Music]:
+        musicFiles = []
 
+        musicFolder = shell.SHGetFolderPath(0, shellcon.CSIDL_MYMUSIC, None, 0)
+        for root, dirs, files in os.walk(musicFolder):
+            for file in files:
+                filename, extension = os.path.splitext(file)
+                if extension in MUSIC_FILE_EXTENSIONS:
+                    folder = os.path.relpath(root, musicFolder)
+                    musicFiles.append(Music(file, os.path.join(folder, file)))
+
+        return musicFiles
 
 
 

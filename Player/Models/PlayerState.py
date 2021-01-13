@@ -19,3 +19,5 @@ class PlayerState:
         self.trackName = ''
         self.trackType = TrackType.NONE
         self.playbackState = PlaybackState.NONE
+        self.trackLength = 0
+        self.trackPosition = 0

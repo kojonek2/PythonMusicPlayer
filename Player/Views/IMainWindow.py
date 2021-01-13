@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from Controllers.IMenuController import IMenuController
+from Controllers.IMusicController import IMusicController
 from Controllers.IOnlineRadiosController import IOnlineRadiosController
 from Controllers.IPlayerController import IPlayerController
 from Models.Listeners.IDisplayViewUpdatedListener import IDisplayViewUpdatedListener
@@ -22,4 +23,8 @@ class IMainWindow(IDisplayViewUpdatedListener, IPlayerStateListener, ABC):
 
     @abstractmethod
     def setPlayerController(self, playerController: IPlayerController):
+        raise NotImplementedError
+
+    @abstractmethod
+    def setMusicController(self, musicController: IMusicController):
         raise NotImplementedError

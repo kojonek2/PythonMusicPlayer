@@ -10,3 +10,7 @@ class IMenuController(ABC):
     @abstractmethod
     def onPredictGenreClicked(self):
         raise NotImplementedError
+
+    @abstractmethod
+    def onMusicMenuButtonClicked(self):
+        raise NotImplementedError

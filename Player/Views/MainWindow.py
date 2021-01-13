@@ -1,6 +1,7 @@
 import tkinter as tk
 
 from Controllers.IMenuController import IMenuController
+from Controllers.IMusicController import IMusicController
 from Controllers.IOnlineRadiosController import IOnlineRadiosController
 from Controllers.IPlayerController import IPlayerController
 from Models.DisplayViewStatus import DisplayViewStatus
@@ -30,6 +31,9 @@ class MainWindow(IMainWindow):
 
     def setPlayerController(self, playerController: IPlayerController):
         self.playerControlPanel.setPlayerController(playerController)
+
+    def setMusicController(self, musicController: IMusicController):
+        self.displayPanel.setMusicController(musicController)
 
     def __initView(self):
         self.root = tk.Tk()

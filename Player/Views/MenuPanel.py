@@ -5,14 +5,13 @@ from Controllers.IMenuController import IMenuController
 WIDTH = 200
 ONLINE_RADIOS_TEXT = 'Online radios'
 PREDICT_GENRE_TEXT = 'Predict genre'
+MUSIC_TEXT = 'Music'
 BUTTON_HEIGHT = 2
 
 class MenuPanel(Frame):
 
     def __init__(self, parent):
         super().__init__(parent)
-
-        self.menuController: IMenuController = None
 
         self.__initView()
 
@@ -30,8 +29,12 @@ class MenuPanel(Frame):
         self.predictGenreButton.grid(row=1, column=0, sticky='WE')
         self.predictGenreButton.configure(relief=RAISED)
 
+        self.musicButton = Button(self, text=MUSIC_TEXT, height=BUTTON_HEIGHT)
+        self.musicButton.grid(row=2, column=0, sticky='WE')
+        self.musicButton.configure(relief=RAISED)
+
     def setMenuController(self, menuController: IMenuController):
-        self.menuController = menuController
         self.onlineRadiosButton.configure(command=menuController.onRadiosOnlineClicked)
         self.predictGenreButton.configure(command=menuController.onPredictGenreClicked)
+        self.musicButton.configure(command=menuController.onMusicMenuButtonClicked)
 

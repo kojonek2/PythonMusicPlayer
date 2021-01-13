@@ -1,7 +1,10 @@
 from Controllers.MainController import MainController
-from Views.MainWindow import MainWindow
 
+import vlc
 
 if __name__ == '__main__':
     mainController = MainController()
+
+
+
 
