@@ -1,5 +1,6 @@
-from tkinter import Frame, Listbox
+from tkinter import Frame, Listbox, Scrollbar
 from typing import List
+
 
 from Controllers.IMusicController import IMusicController
 from Models.Music import Music
@@ -18,8 +19,13 @@ class MusicPanel(Frame):
         self.grid_columnconfigure(0, weight=1)
 
         self.musicListBox = Listbox(self)
-        self.musicListBox.grid(row=0, column=0, sticky='WE', padx=10, pady=10)
+        self.musicListBox.grid(row=0, column=0, sticky='WE', padx=(10, 0), pady=10)
         self.musicListBox.bind('<Double-1>', self.musicDoubleClicked)
+
+        scrollbar = Scrollbar(self, command=self.musicListBox.yview)
+        scrollbar.grid(row=0, column=1, sticky='NS', padx=(0, 10), pady=10)
+
+        self.musicListBox.configure(yscrollcommand=scrollbar.set)
 
     def displayMusic(self, music: List[Music]):
         self.musicList = music

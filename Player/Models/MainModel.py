@@ -77,9 +77,6 @@ class MainModel(IDisplayViewUpdatedObservable):
 
         return musicFiles
 
-
-
-
     # region IDisplayViewUpdatedObservable
     def __notifyDisplayViewUpdated(self):
         for listener in self.displayViewUpdatedListeners:

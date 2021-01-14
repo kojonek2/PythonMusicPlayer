@@ -18,25 +18,36 @@ class Player(IPlayerStateObservable):
 
         self.vlcInstance: vlc.Instance = vlc.Instance('--input-repeat=-1', '--fullscreen')
         self.player: vlc.MediaPlayer = self.vlcInstance.media_player_new()
+
         events: vlc.EventManager = self.player.event_manager()
         events.event_attach(vlc.EventType.MediaPlayerLengthChanged, self.lengthChanged)
+        events.event_attach(vlc.EventType.MediaPlayerPositionChanged, self.positionChanged)
+        self.volume = 50
 
     def lengthChanged(self, event):
         self.playerState.trackLength = int(event.u.new_length / 1000)
-        self.playerState.trackPosition = int(event.u.new_position / 1000)
+        self.playerState.trackPosition = event.u.new_position
+        self.__notifyPlayerStateUpdate()
+
+    def positionChanged(self, event):
+        self.player.audio_set_volume(self.volume)
+        self.playerState.trackPosition = event.u.new_position
         self.__notifyPlayerStateUpdate()
 
     def setOnlineStream(self, streamUrl):
+        self.player.stop()
+
         media = self.vlcInstance.media_new(streamUrl)
         self.player.set_media(media)
         self.playerState.trackType = TrackType.RADIO
         self.__notifyPlayerStateUpdate()
 
     def setMusic(self, musicPath):
+        self.player.stop()
+
         musicFolder = shell.SHGetFolderPath(0, shellcon.CSIDL_MYMUSIC, None, 0)
         path = os.path.join(musicFolder, musicPath)
         media = self.vlcInstance.media_new(path)
-        media.parse()
         self.player.set_media(media)
 
         self.playerState.trackType = TrackType.MUSIC
@@ -53,7 +64,23 @@ class Player(IPlayerStateObservable):
         self.__notifyPlayerStateUpdate()
 
     def setVolume(self, volume):
+        self.volume = volume
         self.player.audio_set_volume(volume)
+
+    def seekTo(self, percentage):
+        if self.playerState.trackType != TrackType.MUSIC:
+            return
+
+        self.player.set_position(percentage)
+
+    def playPause(self):
+        if self.playerState.playbackState == PlaybackState.PLAYING:
+            self.player.pause()
+            self.playerState.playbackState = PlaybackState.PAUSED
+        elif self.playerState.playbackState == PlaybackState.PAUSED:
+            self.player.play()
+            self.playerState.playbackState = PlaybackState.PLAYING
+        self.__notifyPlayerStateUpdate()
 
     # region IPlayerStateObservable
     def __notifyPlayerStateUpdate(self):

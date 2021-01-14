@@ -16,6 +16,10 @@ from tkinter import messagebox
 
 class MainController(IMenuController, IOnlineRadiosController, IPlayerController, IMusicController):
 
+
+
+
+
     def __init__(self):
         self.player = Player()
         self.mainModel = MainModel()
@@ -63,3 +67,9 @@ class MainController(IMenuController, IOnlineRadiosController, IPlayerController
         self.player.setMusic(music.path)
         self.player.setTrackName(music.filename)
         self.player.play()
+
+    def seekTo(self, percentage: float):
+        self.player.seekTo(percentage)
+
+    def onPlayPauseClicked(self):
+        self.player.playPause()
