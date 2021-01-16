@@ -1,10 +1,10 @@
+
 from Controllers.MainController import MainController
 
-import vlc
+from Models.Database.Database import Database
+from Models.Database.MusicDb import MusicDb
+from Models.Database.SkipDb import SkipDb
+from Models.Services.SkipService import SkipService
 
 if __name__ == '__main__':
     mainController = MainController()
-
-
-
-

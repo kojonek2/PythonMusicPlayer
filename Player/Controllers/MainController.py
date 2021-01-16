@@ -3,8 +3,9 @@ from Controllers.IMusicController import IMusicController
 from Controllers.IOnlineRadiosController import IOnlineRadiosController
 from Controllers.IPlayerController import IPlayerController
 from Models.ClassificationModel import ClassificationModel
+from Models.Database.SkipDb import SkipDb
 from Models.MainModel import MainModel
-from Models.Music import Music
+from Models.Data.Music import Music
 from Models.Player import Player
 from Models.RadioStation import RadioStation
 from Views.IMainWindow import IMainWindow
@@ -15,10 +16,6 @@ from tkinter import messagebox
 
 
 class MainController(IMenuController, IOnlineRadiosController, IPlayerController, IMusicController):
-
-
-
-
 
     def __init__(self):
         self.player = Player()
@@ -62,6 +59,12 @@ class MainController(IMenuController, IOnlineRadiosController, IPlayerController
 
     def onMusicMenuButtonClicked(self):
         self.mainModel.displayMusicSelection()
+
+    def onSkipDeleteClicked(self, skip: SkipDb):
+        self.mainModel.mainModelDeleteSkip(skip)
+
+    def onSkipAddClicked(self, musicPath: str, start: int, end: int):
+        self.mainModel.mainModelAddSkip(musicPath, start, end)
 
     def onMusicDoubleClicked(self, music: Music):
         self.player.setMusic(music.path)

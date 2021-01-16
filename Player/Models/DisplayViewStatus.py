@@ -1,7 +1,7 @@
 from typing import List
 
 from Models.DisplayedView import DisplayedView
-from Models.Music import Music
+from Models.Data.Music import Music
 from Models.RadioStation import RadioStation
 
 

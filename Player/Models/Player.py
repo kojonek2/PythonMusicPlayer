@@ -9,6 +9,8 @@ from Models.PlayerState import PlayerState, PlaybackState, TrackType
 
 from win32com.shell import shell, shellcon
 
+from Models.Services.SkipService import SkipService
+
 
 class Player(IPlayerStateObservable):
 
@@ -18,6 +20,8 @@ class Player(IPlayerStateObservable):
 
         self.vlcInstance: vlc.Instance = vlc.Instance('--input-repeat=-1', '--fullscreen')
         self.player: vlc.MediaPlayer = self.vlcInstance.media_player_new()
+
+        self.skips = None
 
         events: vlc.EventManager = self.player.event_manager()
         events.event_attach(vlc.EventType.MediaPlayerLengthChanged, self.lengthChanged)
@@ -34,8 +38,25 @@ class Player(IPlayerStateObservable):
         self.playerState.trackPosition = event.u.new_position
         self.__notifyPlayerStateUpdate()
 
+        self.__checkSkips(int(self.player.get_length() * event.u.new_position / 1000))
+
+    def __checkSkips(self, positionInSeconds):
+        if self.skips is not None:
+            skips = self.skips.copy()
+            skips = filter(lambda s: positionInSeconds < s.end, skips)
+            skips = sorted(skips, key=lambda s: s.start)
+
+            if len(skips) <= 0:
+                return
+
+            s = skips[0]
+            if positionInSeconds >= s.start:
+                trackLengthInMs = self.player.get_length()
+                self.player.set_position(s.end * 1000 / trackLengthInMs)
+
     def setOnlineStream(self, streamUrl):
         self.player.stop()
+        self.skips = None
 
         media = self.vlcInstance.media_new(streamUrl)
         self.player.set_media(media)
@@ -44,6 +65,9 @@ class Player(IPlayerStateObservable):
 
     def setMusic(self, musicPath):
         self.player.stop()
+
+        skipsService = SkipService()
+        self.skips = skipsService.getSkipsForMusic(musicPath)
 
         musicFolder = shell.SHGetFolderPath(0, shellcon.CSIDL_MYMUSIC, None, 0)
         path = os.path.join(musicFolder, musicPath)

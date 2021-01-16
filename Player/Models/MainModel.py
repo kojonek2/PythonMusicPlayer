@@ -1,16 +1,19 @@
 from typing import List
 
+from Models.Database.SkipDb import SkipDb
 from Models.DisplayViewStatus import DisplayViewStatus
 from Models.DisplayedView import DisplayedView
 from Models.Listeners.IDisplayViewUpdatedListener import IDisplayViewUpdatedListener
 from Models.Listeners.IDisplayViewUpdatedObservable import IDisplayViewUpdatedObservable
-from Models.Music import Music
+from Models.Data.Music import Music
 from Models.RadioStation import RadioStation
 
 from win32com.shell import shell, shellcon
 
 import json
 import os
+
+from Models.Services.SkipService import SkipService
 
 RADIO_STATIONS_FILE = 'radioStations.json'
 NAME_KEY = 'name'
@@ -67,6 +70,7 @@ class MainModel(IDisplayViewUpdatedObservable):
     def musicFiles(self) -> List[Music]:
         musicFiles = []
 
+
         musicFolder = shell.SHGetFolderPath(0, shellcon.CSIDL_MYMUSIC, None, 0)
         for root, dirs, files in os.walk(musicFolder):
             for file in files:
@@ -75,7 +79,24 @@ class MainModel(IDisplayViewUpdatedObservable):
                     folder = os.path.relpath(root, musicFolder)
                     musicFiles.append(Music(file, os.path.join(folder, file)))
 
+        skipService = SkipService()
+        for music in musicFiles:
+            music.skips = skipService.getSkipsForMusic(music.path)
+
         return musicFiles
+
+    def mainModelDeleteSkip(self, skip: SkipDb):
+        skipService = SkipService()
+        skipService.deleteSkipsForMusic(skip.id)
+        self.currentDisplayStatus.music = self.musicFiles()  # refresh skips
+        self.__notifyDisplayViewUpdated()
+
+    def mainModelAddSkip(self,  musicPath: str, start: int, end: int):
+        skipService = SkipService()
+        skipService.addSkipForMusic(musicPath, start, end)
+        self.currentDisplayStatus.music = self.musicFiles()  # refresh skips
+        self.__notifyDisplayViewUpdated()
+
 
     # region IDisplayViewUpdatedObservable
     def __notifyDisplayViewUpdated(self):
