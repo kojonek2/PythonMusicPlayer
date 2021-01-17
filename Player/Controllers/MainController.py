@@ -1,3 +1,4 @@
+from Controllers.IAlbumsController import IAlbumsController
 from Controllers.IMenuController import IMenuController
 from Controllers.IMusicController import IMusicController
 from Controllers.IOnlineRadiosController import IOnlineRadiosController
@@ -15,7 +16,13 @@ from tkinter import filedialog
 from tkinter import messagebox
 
 
-class MainController(IMenuController, IOnlineRadiosController, IPlayerController, IMusicController):
+class MainController(IMenuController, IOnlineRadiosController, IPlayerController, IMusicController, IAlbumsController):
+
+
+
+
+
+
 
     def __init__(self):
         self.player = Player()
@@ -28,6 +35,7 @@ class MainController(IMenuController, IOnlineRadiosController, IPlayerController
         self.mainWindow.setOnlineRadiosController(self)
         self.mainWindow.setPlayerController(self)
         self.mainWindow.setMusicController(self)
+        self.mainWindow.setAlbumsController(self)
 
         self.mainModel.addDisplayViewUpdatedListener(self.mainWindow)
         self.player.addPlayerStateUpdatedListener(self.mainWindow)
@@ -60,6 +68,9 @@ class MainController(IMenuController, IOnlineRadiosController, IPlayerController
     def onMusicMenuButtonClicked(self):
         self.mainModel.displayMusicSelection()
 
+    def onAlbumsMenuButtonClicked(self):
+        self.mainModel.displayAlbumsSelection()
+
     def onSkipDeleteClicked(self, skip: SkipDb):
         self.mainModel.mainModelDeleteSkip(skip)
 
@@ -76,3 +87,30 @@ class MainController(IMenuController, IOnlineRadiosController, IPlayerController
 
     def onPlayPauseClicked(self):
         self.player.playPause()
+
+    def createAlbum(self, name: str):
+        if name is None or name == '':
+            messagebox.showwarning('Error', 'Insert album name firstly!')
+            return
+
+        success = self.mainModel.createAlbum(name)
+        if not success:
+            messagebox.showwarning('Error', 'Album with that name already exists!')
+            return
+
+    def deleteAlbum(self, name: str):
+        self.mainModel.deleteAlbum(name)
+
+    def addMusicToAlbum(self, name: str, musicPath: str):
+        error = self.mainModel.addMusicToAlbum(name, musicPath)
+
+        if error is not None:
+            messagebox.showwarning('Error', error)
+            return
+
+    def removeMusicFromAlbum(self, name: str, musicPath: str):
+        error = self.mainModel.removeMusicFromAlbum(name, musicPath)
+
+        if error is not None:
+            messagebox.showwarning('Error', error)
+            return

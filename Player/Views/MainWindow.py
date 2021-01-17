@@ -1,5 +1,6 @@
 import tkinter as tk
 
+from Controllers.IAlbumsController import IAlbumsController
 from Controllers.IMenuController import IMenuController
 from Controllers.IMusicController import IMusicController
 from Controllers.IOnlineRadiosController import IOnlineRadiosController
@@ -34,6 +35,9 @@ class MainWindow(IMainWindow):
 
     def setMusicController(self, musicController: IMusicController):
         self.displayPanel.setMusicController(musicController)
+
+    def setAlbumsController(self, albumsController: IAlbumsController):
+        self.displayPanel.setAlbumsController(albumsController)
 
     def __initView(self):
         self.root = tk.Tk()

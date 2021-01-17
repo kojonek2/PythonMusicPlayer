@@ -1,5 +1,6 @@
 from typing import List
 
+from Models.Database.AlbumDb import AlbumDb
 from Models.Database.SkipDb import SkipDb
 from Models.DisplayViewStatus import DisplayViewStatus
 from Models.DisplayedView import DisplayedView
@@ -13,6 +14,7 @@ from win32com.shell import shell, shellcon
 import json
 import os
 
+from Models.Services.AlbumService import AlbumService
 from Models.Services.SkipService import SkipService
 
 RADIO_STATIONS_FILE = 'radioStations.json'
@@ -34,8 +36,6 @@ class MainModel(IDisplayViewUpdatedObservable):
         self.__notifyDisplayViewUpdated()
 
     def readRadioStations(self) -> List[RadioStation]:
-        # return [RadioStation('Radio Zet', 'https://n-4-14.dcs.redcdn.pl/sc/o2/Eurozet/live/audio.livx', 'Images/radio_zet.jpg'),
-        #         RadioStation('RMF FM', 'https://rs9-krk2-cyfronet.rmfstream.pl/RMFFM48', 'Images/rmf.png')]
         if not os.path.isfile(RADIO_STATIONS_FILE):
             return None
 
@@ -64,12 +64,11 @@ class MainModel(IDisplayViewUpdatedObservable):
     def displayMusicSelection(self):
         self.currentDisplayStatus.clear()
         self.currentDisplayStatus.currentDisplayedView = DisplayedView.MUSIC_SCREEN
-        self.currentDisplayStatus.music = self.musicFiles()
+        self.currentDisplayStatus.music = self.__musicFiles()
         self.__notifyDisplayViewUpdated()
 
-    def musicFiles(self) -> List[Music]:
+    def __musicFiles(self) -> List[Music]:
         musicFiles = []
-
 
         musicFolder = shell.SHGetFolderPath(0, shellcon.CSIDL_MYMUSIC, None, 0)
         for root, dirs, files in os.walk(musicFolder):
@@ -85,18 +84,72 @@ class MainModel(IDisplayViewUpdatedObservable):
 
         return musicFiles
 
+    def displayAlbumsSelection(self):
+        self.currentDisplayStatus.clear()
+        self.currentDisplayStatus.currentDisplayedView = DisplayedView.ALBUMS_SCREEN
+        self.currentDisplayStatus.music = self.__musicFiles()
+        self.currentDisplayStatus.albums = self.__getAlbums()
+        self.__notifyDisplayViewUpdated()
+
+    def __getAlbums(self) -> List[AlbumDb]:
+        albumService = AlbumService()
+        return albumService.getAlbums()
+
     def mainModelDeleteSkip(self, skip: SkipDb):
         skipService = SkipService()
         skipService.deleteSkipsForMusic(skip.id)
-        self.currentDisplayStatus.music = self.musicFiles()  # refresh skips
+        self.currentDisplayStatus.music = self.__musicFiles()  # refresh skips
         self.__notifyDisplayViewUpdated()
 
     def mainModelAddSkip(self,  musicPath: str, start: int, end: int):
         skipService = SkipService()
         skipService.addSkipForMusic(musicPath, start, end)
-        self.currentDisplayStatus.music = self.musicFiles()  # refresh skips
+        self.currentDisplayStatus.music = self.__musicFiles()  # refresh skips
         self.__notifyDisplayViewUpdated()
 
+    def createAlbum(self, name: str) -> bool:
+        albumService = AlbumService()
+        duplicate = albumService.getAlbum(name)
+        if duplicate is not None:
+            return False
+
+        albumService.createAlbum(name)
+
+        self.currentDisplayStatus.albums = self.__getAlbums()
+        self.__notifyDisplayViewUpdated()
+        return True
+
+    def deleteAlbum(self, name):
+        albumService = AlbumService()
+        albumService.deleteAlbum(name)
+        self.currentDisplayStatus.albums = self.__getAlbums()
+        self.__notifyDisplayViewUpdated()
+
+    def addMusicToAlbum(self, name: str, musicPath: str):
+        albumService = AlbumService()
+
+        try:
+            albumService.addMusic(name, musicPath)
+        except ValueError as e:
+            return str(e)
+
+        self.currentDisplayStatus.albums = self.__getAlbums()
+        self.__notifyDisplayViewUpdated()
+
+        return None
+
+    def removeMusicFromAlbum(self, name: str, musicPath: str):
+        albumService = AlbumService()
+
+        try:
+            albumService.removeMusic(name, musicPath)
+        except ValueError as e:
+            return str(e)
+
+        self.currentDisplayStatus.albums = self.__getAlbums()
+        self.__notifyDisplayViewUpdated()
+
+        return None
 
     # region IDisplayViewUpdatedObservable
     def __notifyDisplayViewUpdated(self):

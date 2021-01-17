@@ -6,6 +6,7 @@ WIDTH = 200
 ONLINE_RADIOS_TEXT = 'Online radios'
 PREDICT_GENRE_TEXT = 'Predict genre'
 MUSIC_TEXT = 'Music'
+ALBUMS_TEXT = 'Albums'
 BUTTON_HEIGHT = 2
 
 class MenuPanel(Frame):
@@ -33,8 +34,13 @@ class MenuPanel(Frame):
         self.musicButton.grid(row=2, column=0, sticky='WE')
         self.musicButton.configure(relief=RAISED)
 
+        self.albumsButton = Button(self, text=ALBUMS_TEXT, height=BUTTON_HEIGHT)
+        self.albumsButton.grid(row=3, column=0, sticky='WE')
+        self.albumsButton.configure(relief=RAISED)
+
     def setMenuController(self, menuController: IMenuController):
         self.onlineRadiosButton.configure(command=menuController.onRadiosOnlineClicked)
         self.predictGenreButton.configure(command=menuController.onPredictGenreClicked)
         self.musicButton.configure(command=menuController.onMusicMenuButtonClicked)
+        self.albumsButton.configure(command=menuController.onAlbumsMenuButtonClicked)
 

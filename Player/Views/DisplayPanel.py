@@ -1,10 +1,12 @@
 from tkinter import Frame, Label, CENTER
 
+from Controllers.IAlbumsController import IAlbumsController
 from Controllers.IMusicController import IMusicController
 from Controllers.IOnlineRadiosController import IOnlineRadiosController
 from Models.DisplayViewStatus import DisplayViewStatus
 from Models.DisplayedView import DisplayedView
 from Models.Listeners.IDisplayViewUpdatedListener import IDisplayViewUpdatedListener
+from Views.AlbumsPanel import AlbumsPanel
 from Views.MusicPanel import MusicPanel
 from Views.OnlineRadiosPanel import OnlineRadiosPanel
 
@@ -18,6 +20,7 @@ class DisplayPanel(Frame, IDisplayViewUpdatedListener):
         self.welcomePanel: Frame = None
         self.radioPanel: OnlineRadiosPanel = None
         self.musicPanel: MusicPanel = None
+        self.albumsPanel: AlbumsPanel = None
 
         self.__viewInit()
 
@@ -26,6 +29,9 @@ class DisplayPanel(Frame, IDisplayViewUpdatedListener):
 
     def setMusicController(self, musicController: IMusicController):
         self.musicPanel = MusicPanel(self, musicController)
+
+    def setAlbumsController(self, albumsController: IAlbumsController):
+        self.albumsPanel = AlbumsPanel(self, albumsController)
 
     def __viewInit(self):
         self.grid_columnconfigure(0, weight=1)
@@ -47,3 +53,6 @@ class DisplayPanel(Frame, IDisplayViewUpdatedListener):
         elif status.currentDisplayedView is DisplayedView.MUSIC_SCREEN and self.musicPanel is not None:
             self.musicPanel.grid(row=0, column=0, sticky='NSWE')
             self.musicPanel.displayMusic(status.music)
+        elif status.currentDisplayedView is DisplayedView.ALBUMS_SCREEN and self.albumsPanel is not None:
+            self.albumsPanel.grid(row=0, column=0, sticky='NSWE')
+            self.albumsPanel.displayAlbums(status.albums, status.music)

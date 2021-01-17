@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from Controllers.IAlbumsController import IAlbumsController
 from Controllers.IMenuController import IMenuController
 from Controllers.IMusicController import IMusicController
 from Controllers.IOnlineRadiosController import IOnlineRadiosController
@@ -27,4 +28,8 @@ class IMainWindow(IDisplayViewUpdatedListener, IPlayerStateListener, ABC):
 
     @abstractmethod
     def setMusicController(self, musicController: IMusicController):
+        raise NotImplementedError
+
+    @abstractmethod
+    def setAlbumsController(self, albumsController: IAlbumsController):
         raise NotImplementedError

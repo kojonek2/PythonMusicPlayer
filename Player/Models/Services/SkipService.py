@@ -23,7 +23,7 @@ class SkipService:
     def addSkipForMusic(self, path, start, end):
         session = self.__db.crateSession()
 
-        music = session.query(MusicDb).join(SkipDb).filter(MusicDb.path == path).first()
+        music = session.query(MusicDb).filter(MusicDb.path == path).first()
         if music is None:
             music = MusicDb(path=path)
             session.add(music)
