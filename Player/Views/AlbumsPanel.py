@@ -7,6 +7,8 @@ from Models.Data.Music import Music
 from Models.Database.AlbumDb import AlbumDb
 
 ALBUM_DELETE_TEXT = 'Delete album'
+ALBUM_EXPORT_TEXT = 'Export album'
+ALBUM_IMPORT_TEXT = 'Import album'
 ALBUM_CREATE_LABEL_TEXT = 'Create album with name:'
 ALBUM_CREATE_BUTTON_TEXT = 'Create album'
 
@@ -14,6 +16,7 @@ MUSIC_ON_COMPUTER_TEXT = 'Music on computer:'
 MUSIC_IN_ALBUM_TEXT = 'Music in album:'
 
 DELETE_ALBUM_SELECT_TEXT = 'Select album firstly!'
+EXPORT_ALBUM_SELECT_TEXT = 'Select album firstly!'
 CRATE_ALBUM_INSERT_NAME_TEXT = 'Insert name of album firstly!'
 ADD_TO_ALBUM_SELECT_TEXT = 'Select music to add firstly!'
 REMOVE_FROM_ALBUM_SELECT_TEXT = 'Select music to remove firstly!'
@@ -50,8 +53,19 @@ class AlbumsPanel(Frame):
 
         ######################################################################################################
 
-        self.albumDeleteButton = Button(self, text=ALBUM_DELETE_TEXT, command=self.__deleteAlbum)
-        self.albumDeleteButton.grid(row=1, column=0, sticky='W', padx=10)
+        buttonsFrame = Frame(self)
+        buttonsFrame.grid(row=1, column=0, sticky='W', padx=10)
+
+        self.albumDeleteButton = Button(buttonsFrame, text=ALBUM_DELETE_TEXT, command=self.__deleteAlbum)
+        self.albumDeleteButton.grid(row=0, column=0, padx=5)
+
+        self.albumExportButton = Button(buttonsFrame, text=ALBUM_EXPORT_TEXT, command=self.__exportAlbumClicked)
+        self.albumExportButton.grid(row=0, column=1, padx=5)
+
+        self.albumImportButton = Button(buttonsFrame, text=ALBUM_IMPORT_TEXT, command=self.__importAlbumClicked)
+        self.albumImportButton.grid(row=0, column=2, padx=5)
+
+        ######################################################################################################
 
         createFrame = Frame(self)
         createFrame.grid(row=2, column=0, sticky='W', padx=10)
@@ -233,3 +247,15 @@ class AlbumsPanel(Frame):
         selectedMusic = self.displayedMusicInAlbum[selection[0]]
 
         self.albumsController.removeMusicFromAlbum(selectedAlbum.name, selectedMusic.path)
+
+    def __exportAlbumClicked(self):
+        selection = self.albumsListBox.curselection()
+        if len(selection) <= 0:
+            messagebox.showwarning('Warning', EXPORT_ALBUM_SELECT_TEXT)
+            return
+
+        selectedAlbum = self.albumList[selection[0]]
+        self.albumsController.exportAlbum(selectedAlbum.name)
+
+    def __importAlbumClicked(self):
+        self.albumsController.importAlbum()

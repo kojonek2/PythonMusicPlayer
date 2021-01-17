@@ -18,3 +18,11 @@ class IAlbumsController(ABC):
     @abstractmethod
     def removeMusicFromAlbum(self, name: str, musicPath: str):
         raise NotImplementedError
+
+    @abstractmethod
+    def exportAlbum(self, name: str):
+        raise NotImplementedError
+
+    @abstractmethod
+    def importAlbum(self):
+        raise NotImplementedError

@@ -151,6 +151,10 @@ class MainModel(IDisplayViewUpdatedObservable):
 
         return None
 
+    def albumImported(self):
+        self.currentDisplayStatus.albums = self.__getAlbums()
+        self.__notifyDisplayViewUpdated()
+
     # region IDisplayViewUpdatedObservable
     def __notifyDisplayViewUpdated(self):
         for listener in self.displayViewUpdatedListeners:

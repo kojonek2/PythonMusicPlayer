@@ -1,3 +1,5 @@
+import os
+
 from Controllers.IAlbumsController import IAlbumsController
 from Controllers.IMenuController import IMenuController
 from Controllers.IMusicController import IMusicController
@@ -9,25 +11,22 @@ from Models.MainModel import MainModel
 from Models.Data.Music import Music
 from Models.Player import Player
 from Models.RadioStation import RadioStation
+from Models.SerializationModel import SerializationModel
 from Views.IMainWindow import IMainWindow
 from Views.MainWindow import MainWindow
 
 from tkinter import filedialog
 from tkinter import messagebox
 
+ALBUM_EXTENSION = '.alb'
 
 class MainController(IMenuController, IOnlineRadiosController, IPlayerController, IMusicController, IAlbumsController):
-
-
-
-
-
-
 
     def __init__(self):
         self.player = Player()
         self.mainModel = MainModel()
         self.classificationModel = ClassificationModel()
+        self.serializationModel = SerializationModel()
 
         self.mainWindow: IMainWindow = MainWindow()
 
@@ -114,3 +113,28 @@ class MainController(IMenuController, IOnlineRadiosController, IPlayerController
         if error is not None:
             messagebox.showwarning('Error', error)
             return
+
+    def exportAlbum(self, name: str):
+        filename = filedialog.asksaveasfilename(defaultextension='alb', filetypes=[('Album file', ALBUM_EXTENSION)])
+        _, extension = os.path.splitext(filename)
+
+        if extension != ALBUM_EXTENSION:
+            messagebox.showwarning('Warning', f'Please select file with extension {ALBUM_EXTENSION}')
+            return
+
+        self.serializationModel.exportAlbum(name, filename)
+
+    def importAlbum(self):
+        filename = filedialog.askopenfilename(defaultextension='alb', filetypes=[('Album file', ALBUM_EXTENSION)])
+        _, extension = os.path.splitext(filename)
+
+        if extension != ALBUM_EXTENSION:
+            messagebox.showwarning('Warning', f'Please select file with extension {ALBUM_EXTENSION}')
+            return
+
+        success = self.serializationModel.importAlbum(filename)
+        if not success:
+            messagebox.showwarning('Warning', f'Import failed! Possible file corruption!')
+            return
+
+        self.mainModel.albumImported()
