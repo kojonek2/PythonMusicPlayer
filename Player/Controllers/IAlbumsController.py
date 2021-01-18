@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from Models.Database.AlbumDb import AlbumDb
+
 
 class IAlbumsController(ABC):
 
@@ -25,4 +27,8 @@ class IAlbumsController(ABC):
 
     @abstractmethod
     def importAlbum(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def addAlbumToQueue(self, album: AlbumDb):
         raise NotImplementedError

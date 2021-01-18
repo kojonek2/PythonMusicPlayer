@@ -18,3 +18,7 @@ class IMenuController(ABC):
     @abstractmethod
     def onAlbumsMenuButtonClicked(self):
         raise NotImplementedError
+
+    @abstractmethod
+    def onQueueMenuButtonClicked(self):
+        raise NotImplementedError

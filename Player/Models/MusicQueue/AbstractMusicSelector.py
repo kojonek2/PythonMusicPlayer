@@ -7,6 +7,7 @@ from Models.MusicQueue.AlbumEntry import AlbumEntry
 Queue = List[Union[Music, AlbumEntry]]
 Position = Tuple[int, int]
 
+
 class AbstractMusicSelector(ABC):
 
     @abstractmethod

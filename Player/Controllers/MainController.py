@@ -7,6 +7,7 @@ from Controllers.IMusicController import IMusicController
 from Controllers.IOnlineRadiosController import IOnlineRadiosController
 from Controllers.IPlayerController import IPlayerController
 from Models.ClassificationModel import ClassificationModel
+from Models.Database.AlbumDb import AlbumDb
 from Models.Database.SkipDb import SkipDb
 from Models.IRunnerOnMainThread import IRunnerOnMainThread
 from Models.MainModel import MainModel
@@ -70,6 +71,9 @@ class MainController(IMenuController, IOnlineRadiosController, IPlayerController
 
     def onAlbumsMenuButtonClicked(self):
         self.mainModel.displayAlbumsSelection()
+
+    def onQueueMenuButtonClicked(self):
+        self.mainModel.displayQueue()
 
     def onSkipDeleteClicked(self, skip: SkipDb):
         self.mainModel.mainModelDeleteSkip(skip)
@@ -140,3 +144,12 @@ class MainController(IMenuController, IOnlineRadiosController, IPlayerController
 
     def runOnMainThread(self, callable: Callable):
         self.mainWindow.runOnEventLoop(callable)
+
+    def addAlbumToQueue(self, album: AlbumDb):
+        self.mainModel.addAlbumToQueue(album)
+
+    def nextTrackClicked(self):
+        self.mainModel.nextTrack()
+
+    def changeMusicSelectionModeClicked(self):
+        self.mainModel.changeMusicSelectionMode()

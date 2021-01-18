@@ -16,3 +16,11 @@ class IPlayerController(ABC):
     @abstractmethod
     def onPlayPauseClicked(self):
         raise NotImplementedError
+
+    @abstractmethod
+    def nextTrackClicked(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def changeMusicSelectionModeClicked(self):
+        raise NotImplementedError

@@ -13,11 +13,17 @@ class PlaybackState(Enum):
     PAUSED = 2
 
 
+class MusicSelectionMode(Enum):
+    LINEAR = 0
+    REPEAT = 1
+
+
 class PlayerState:
 
     def __init__(self):
         self.trackName = ''
         self.trackType = TrackType.NONE
         self.playbackState = PlaybackState.NONE
+        self.musicSelectionMode = MusicSelectionMode.LINEAR
         self.trackLength = 0
         self.trackPosition = 0

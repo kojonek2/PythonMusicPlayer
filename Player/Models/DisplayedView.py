@@ -6,3 +6,4 @@ class DisplayedView(Enum):
     ONLINE_RADIOS = 2
     MUSIC_SCREEN = 3
     ALBUMS_SCREEN = 4
+    QUEUE = 5

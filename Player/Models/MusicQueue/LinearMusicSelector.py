@@ -1,5 +1,5 @@
-from Models.Database.AlbumDb import AlbumDb
 from Models.MusicQueue.AbstractMusicSelector import AbstractMusicSelector, Queue, Position
+from Models.MusicQueue.AlbumEntry import AlbumEntry
 
 
 class LinearMusicSelector(AbstractMusicSelector):
@@ -15,7 +15,7 @@ class LinearMusicSelector(AbstractMusicSelector):
             return 0, 0
 
         entry = queue[selectedPosition[0]]
-        if isinstance(entry, AlbumDb):
+        if isinstance(entry, AlbumEntry):
             return self.__processAlbum(queue, selectedPosition)
         else:
             return self.__processMusic(queue, selectedPosition)

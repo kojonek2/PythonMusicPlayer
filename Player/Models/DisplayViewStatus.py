@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union, Tuple
 
 from Models.Database.AlbumDb import AlbumDb
 from Models.DisplayedView import DisplayedView
@@ -13,9 +13,13 @@ class DisplayViewStatus:
         self.radioStations: List[RadioStation] = None
         self.music: List[Music] = None
         self.albums: List[AlbumDb] = None
+        self.queue: List[Union[Music, AlbumDb]] = None
+        self.selectionInQueue: Tuple[int, int] = None
 
     def clear(self):
         self.currentDisplayedView = DisplayedView.WELCOME_SCREEN
         self.radioStations: List[RadioStation] = None
         self.music: List[Music] = None
         self.albums: List[AlbumDb] = None
+        self.queue: List[Union[Music, AlbumDb]] = None
+        self.selectionInQueue: Tuple[int, int] = None

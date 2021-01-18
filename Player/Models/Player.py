@@ -6,7 +6,7 @@ import os
 from Models.IRunnerOnMainThread import IRunnerOnMainThread
 from Models.Listeners.IPlayerStateListener import IPlayerStateListener
 from Models.Listeners.IPlayerStateObservable import IPlayerStateObservable
-from Models.PlayerState import PlayerState, PlaybackState, TrackType
+from Models.PlayerState import PlayerState, PlaybackState, TrackType, MusicSelectionMode
 
 from win32com.shell import shell, shellcon
 
@@ -118,6 +118,10 @@ class Player(IPlayerStateObservable):
         self.playerState.trackType = TrackType.NONE
         self.playerState.playbackState = PlaybackState.NONE
         self.playerState.trackName = ''
+        self.__notifyPlayerStateUpdate()
+
+    def setMusicSelectionMode(self, mode: MusicSelectionMode):
+        self.playerState.musicSelectionMode = mode
         self.__notifyPlayerStateUpdate()
 
     # region IPlayerStateObservable

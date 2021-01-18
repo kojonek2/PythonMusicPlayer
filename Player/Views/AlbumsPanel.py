@@ -43,7 +43,7 @@ class AlbumsPanel(Frame):
 
         self.albumsListBox = Listbox(self, exportselection=0)
         self.albumsListBox.grid(row=0, column=0, sticky='WE', padx=(10, 0), pady=10)
-        #self.albumsListBox.bind('<Double-1>', self.musicDoubleClicked) # TODO
+        self.albumsListBox.bind('<Double-1>', self.__albumDoubleClicked)
         self.albumsListBox.bind("<<ListboxSelect>>", self.__albumSelected)
 
         albumsScrollbar = Scrollbar(self, command=self.albumsListBox.yview)
@@ -259,3 +259,7 @@ class AlbumsPanel(Frame):
 
     def __importAlbumClicked(self):
         self.albumsController.importAlbum()
+
+    def __albumDoubleClicked(self, event):
+        album = self.albumList[self.albumsListBox.curselection()[0]]
+        self.albumsController.addAlbumToQueue(album)
