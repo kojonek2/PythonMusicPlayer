@@ -1,4 +1,5 @@
 import tkinter as tk
+from typing import Callable
 
 from Controllers.IAlbumsController import IAlbumsController
 from Controllers.IMenuController import IMenuController
@@ -77,13 +78,13 @@ class MainWindow(IMainWindow):
         self.root.mainloop()
 
     def onDisplayViewUpdated(self, status: DisplayViewStatus):
-        self.root.after(0, lambda: self.onDisplayViewUpdatedAfter(status)) #call it on tkinter thread (it might come from VLC thread)
-
-    def onDisplayViewUpdatedAfter(self, status: DisplayViewStatus):
         self.displayPanel.onDisplayViewUpdated(status)
 
     def onPlayerStateUpdated(self, state: PlayerState):
-        self.root.after(0, lambda: self.onPlayerStateUpdatedAfter(state)) #call it on tkinter thread (it might come from VLC thread)
-
-    def onPlayerStateUpdatedAfter(self, state: PlayerState):
         self.playerControlPanel.onPlayerStateUpdated(state)
+
+    def onPlayerEndReached(self):
+        self.playerControlPanel.onPlayerEndReached()
+
+    def runOnEventLoop(self, callable: Callable):
+        self.root.after(0, callable)

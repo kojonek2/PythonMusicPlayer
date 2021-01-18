@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from collections import Callable
 
 from Controllers.IAlbumsController import IAlbumsController
 from Controllers.IMenuController import IMenuController
@@ -32,4 +33,8 @@ class IMainWindow(IDisplayViewUpdatedListener, IPlayerStateListener, ABC):
 
     @abstractmethod
     def setAlbumsController(self, albumsController: IAlbumsController):
+        raise NotImplementedError
+
+    @abstractmethod
+    def runOnEventLoop(self, callable: Callable):
         raise NotImplementedError

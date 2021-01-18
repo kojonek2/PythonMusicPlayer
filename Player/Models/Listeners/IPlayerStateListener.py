@@ -8,3 +8,7 @@ class IPlayerStateListener(ABC):
     @abstractmethod
     def onPlayerStateUpdated(self, state: PlayerState):
         raise NotImplementedError
+
+    @abstractmethod
+    def onPlayerEndReached(self):
+        raise NotImplementedError

@@ -124,9 +124,10 @@ class PlayerControlPanel(Frame, IPlayerStateListener):
 
         self.__sendVolume()
 
-
-
     def onProgressBarClicked(self, event, playerController: IPlayerController):
         percentage = event.x / event.widget.winfo_width()
         playerController.seekTo(percentage)
+
+    def onPlayerEndReached(self):
+        pass
 

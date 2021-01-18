@@ -1,4 +1,5 @@
 import os
+from typing import Callable
 
 from Controllers.IAlbumsController import IAlbumsController
 from Controllers.IMenuController import IMenuController
@@ -7,6 +8,7 @@ from Controllers.IOnlineRadiosController import IOnlineRadiosController
 from Controllers.IPlayerController import IPlayerController
 from Models.ClassificationModel import ClassificationModel
 from Models.Database.SkipDb import SkipDb
+from Models.IRunnerOnMainThread import IRunnerOnMainThread
 from Models.MainModel import MainModel
 from Models.Data.Music import Music
 from Models.Player import Player
@@ -20,11 +22,12 @@ from tkinter import messagebox
 
 ALBUM_EXTENSION = '.alb'
 
-class MainController(IMenuController, IOnlineRadiosController, IPlayerController, IMusicController, IAlbumsController):
+
+class MainController(IMenuController, IOnlineRadiosController, IPlayerController, IMusicController, IAlbumsController, IRunnerOnMainThread):
 
     def __init__(self):
-        self.player = Player()
-        self.mainModel = MainModel()
+        self.player = Player(self)
+        self.mainModel = MainModel(self.player)
         self.classificationModel = ClassificationModel()
         self.serializationModel = SerializationModel()
 
@@ -45,9 +48,7 @@ class MainController(IMenuController, IOnlineRadiosController, IPlayerController
         self.mainModel.displayRadioSelection()
 
     def onRadioSelected(self, radio: RadioStation):
-        self.player.setOnlineStream(radio.streamURL)
-        self.player.setTrackName(radio.name)
-        self.player.play()
+        self.mainModel.playRadio(radio)
 
     def onVolumeSelected(self, volume: int):
         self.player.setVolume(volume)
@@ -77,9 +78,7 @@ class MainController(IMenuController, IOnlineRadiosController, IPlayerController
         self.mainModel.mainModelAddSkip(musicPath, start, end)
 
     def onMusicDoubleClicked(self, music: Music):
-        self.player.setMusic(music.path)
-        self.player.setTrackName(music.filename)
-        self.player.play()
+        self.mainModel.addMusicToQueue(music)
 
     def seekTo(self, percentage: float):
         self.player.seekTo(percentage)
@@ -138,3 +137,6 @@ class MainController(IMenuController, IOnlineRadiosController, IPlayerController
             return
 
         self.mainModel.albumImported()
+
+    def runOnMainThread(self, callable: Callable):
+        self.mainWindow.runOnEventLoop(callable)

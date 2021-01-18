@@ -3,6 +3,7 @@ from typing import List
 import vlc
 import os
 
+from Models.IRunnerOnMainThread import IRunnerOnMainThread
 from Models.Listeners.IPlayerStateListener import IPlayerStateListener
 from Models.Listeners.IPlayerStateObservable import IPlayerStateObservable
 from Models.PlayerState import PlayerState, PlaybackState, TrackType
@@ -14,7 +15,7 @@ from Models.Services.SkipService import SkipService
 
 class Player(IPlayerStateObservable):
 
-    def __init__(self):
+    def __init__(self, runnerOnMainThread: IRunnerOnMainThread):
         self.playerStateListeners: List[IPlayerStateListener] = []
         self.playerState = PlayerState()
 
@@ -23,22 +24,29 @@ class Player(IPlayerStateObservable):
 
         self.skips = None
 
+        self.runnerOnMainThread = runnerOnMainThread
+
         events: vlc.EventManager = self.player.event_manager()
         events.event_attach(vlc.EventType.MediaPlayerLengthChanged, self.lengthChanged)
         events.event_attach(vlc.EventType.MediaPlayerPositionChanged, self.positionChanged)
+        events.event_attach(vlc.EventType.MediaPlayerEndReached, self.endReached)
         self.volume = 50
 
     def lengthChanged(self, event):
         self.playerState.trackLength = int(event.u.new_length / 1000)
         self.playerState.trackPosition = event.u.new_position
-        self.__notifyPlayerStateUpdate()
+        self.runnerOnMainThread.runOnMainThread(lambda: self.__notifyPlayerStateUpdate())
+
 
     def positionChanged(self, event):
         self.player.audio_set_volume(self.volume)
         self.playerState.trackPosition = event.u.new_position
-        self.__notifyPlayerStateUpdate()
+        self.runnerOnMainThread.runOnMainThread(lambda: self.__notifyPlayerStateUpdate())
 
         self.__checkSkips(int(self.player.get_length() * event.u.new_position / 1000))
+
+    def endReached(self, event):
+        self.runnerOnMainThread.runOnMainThread(lambda: self.__notifyPlayerEndReached())
 
     def __checkSkips(self, positionInSeconds):
         if self.skips is not None:
@@ -65,7 +73,6 @@ class Player(IPlayerStateObservable):
 
     def setMusic(self, musicPath):
         self.player.stop()
-
         skipsService = SkipService()
         self.skips = skipsService.getSkipsForMusic(musicPath)
 
@@ -106,10 +113,21 @@ class Player(IPlayerStateObservable):
             self.playerState.playbackState = PlaybackState.PLAYING
         self.__notifyPlayerStateUpdate()
 
+    def clear(self):
+        self.player.stop()
+        self.playerState.trackType = TrackType.NONE
+        self.playerState.playbackState = PlaybackState.NONE
+        self.playerState.trackName = ''
+        self.__notifyPlayerStateUpdate()
+
     # region IPlayerStateObservable
     def __notifyPlayerStateUpdate(self):
         for listener in self.playerStateListeners:
             listener.onPlayerStateUpdated(self.playerState)
+
+    def __notifyPlayerEndReached(self):
+        for listener in self.playerStateListeners:
+            listener.onPlayerEndReached()
 
     def addPlayerStateUpdatedListener(self, listener: IPlayerStateListener):
         if listener not in self.playerStateListeners:

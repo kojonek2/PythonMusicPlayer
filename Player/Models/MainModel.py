@@ -7,6 +7,11 @@ from Models.DisplayedView import DisplayedView
 from Models.Listeners.IDisplayViewUpdatedListener import IDisplayViewUpdatedListener
 from Models.Listeners.IDisplayViewUpdatedObservable import IDisplayViewUpdatedObservable
 from Models.Data.Music import Music
+from Models.Listeners.IPlayerStateListener import IPlayerStateListener
+from Models.MusicQueue.LinearMusicSelector import LinearMusicSelector
+from Models.MusicQueue.QueueModel import QueueModel
+from Models.Player import Player
+from Models.PlayerState import PlayerState
 from Models.RadioStation import RadioStation
 
 from win32com.shell import shell, shellcon
@@ -23,11 +28,15 @@ STREAM_URL_KEY = 'streamURL'
 PATH_TO_IMAGE_KEY = 'imagePath'
 MUSIC_FILE_EXTENSIONS = ['.mp3', '.wav']
 
-class MainModel(IDisplayViewUpdatedObservable):
+class MainModel(IDisplayViewUpdatedObservable, IPlayerStateListener):
 
-    def __init__(self):
+    def __init__(self, player: Player):
         self.displayViewUpdatedListeners: List[IDisplayViewUpdatedListener] = []
         self.currentDisplayStatus = DisplayViewStatus()
+        self.player = player
+        self.musicQueue = QueueModel(LinearMusicSelector())
+
+        self.player.addPlayerStateUpdatedListener(self)
 
     def displayRadioSelection(self):
         self.currentDisplayStatus.clear()
@@ -154,6 +163,48 @@ class MainModel(IDisplayViewUpdatedObservable):
     def albumImported(self):
         self.currentDisplayStatus.albums = self.__getAlbums()
         self.__notifyDisplayViewUpdated()
+
+    def addMusicToQueue(self, music: Music):
+        first = self.musicQueue.getSelectedMusic() is None
+
+        self.musicQueue.addMusicToQueue(music)
+
+        if first:
+            self.__playSongFromQueue()
+
+    def __playSongFromQueue(self):
+        music = self.musicQueue.getSelectedMusic()
+        if music is None:
+            self.player.clear()
+        else:
+            self.player.setMusic(music.path)
+            self.player.setTrackName(music.filename)
+            self.player.play()
+
+    def playRadio(self, radio: RadioStation):
+        self.musicQueue.clear()
+        #TODO clear track queue display if it is displayed
+
+        self.player.setOnlineStream(radio.streamURL)
+        self.player.setTrackName(radio.name)
+        self.player.play()
+
+    def onPlayerStateUpdated(self, state: PlayerState):
+        pass
+
+    def onPlayerEndReached(self):
+        self.musicQueue.selectNex()
+        self.__playSongFromQueue()
+
+    # def onMusicDoubleClicked(self, music: Music):
+    #     self.player.setMusic(music.path)
+    #     self.player.setTrackName(music.filename)
+    #     self.player.play()
+
+    # def onRadioSelected(self, radio: RadioStation):
+    #     self.player.setOnlineStream(radio.streamURL)
+    #     self.player.setTrackName(radio.name)
+    #     self.player.play()
 
     # region IDisplayViewUpdatedObservable
     def __notifyDisplayViewUpdated(self):
