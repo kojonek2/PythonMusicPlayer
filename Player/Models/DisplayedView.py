@@ -7,3 +7,4 @@ class DisplayedView(Enum):
     MUSIC_SCREEN = 3
     ALBUMS_SCREEN = 4
     QUEUE = 5
+    STATISTICS = 6

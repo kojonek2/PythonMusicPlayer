@@ -1,3 +1,4 @@
+from sqlalchemy import func, desc
 from sqlalchemy.orm import joinedload
 
 from Models.Database.AlbumDb import AlbumDb
@@ -93,3 +94,13 @@ class AlbumService:
 
         session.commit()
         session.close()
+
+    def getTopMusicUsagesInAlbums(self):
+        session = self.__db.crateSession()
+
+        result = session.query(MusicDb.path, func.count(AlbumDb.id)).join(AlbumDb.music).\
+            group_by(MusicDb.path).order_by(desc(func.count(AlbumDb.id))).limit(5).all()
+
+        session.close()
+
+        return result

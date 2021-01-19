@@ -8,6 +8,7 @@ PREDICT_GENRE_TEXT = 'Predict genre'
 MUSIC_TEXT = 'Music'
 ALBUMS_TEXT = 'Albums'
 QUEUE_TEXT = 'Queue'
+STATISTICS_TEXT = 'Statistics'
 BUTTON_HEIGHT = 2
 
 class MenuPanel(Frame):
@@ -43,10 +44,15 @@ class MenuPanel(Frame):
         self.queueButton.grid(row=4, column=0, sticky='WE')
         self.queueButton.configure(relief=RAISED)
 
+        self.statisticsButton = Button(self, text=STATISTICS_TEXT, height=BUTTON_HEIGHT)
+        self.statisticsButton.grid(row=5, column=0, sticky='WE')
+        self.statisticsButton.configure(relief=RAISED)
+
     def setMenuController(self, menuController: IMenuController):
         self.onlineRadiosButton.configure(command=menuController.onRadiosOnlineClicked)
         self.predictGenreButton.configure(command=menuController.onPredictGenreClicked)
         self.musicButton.configure(command=menuController.onMusicMenuButtonClicked)
         self.albumsButton.configure(command=menuController.onAlbumsMenuButtonClicked)
         self.queueButton.configure(command=menuController.onQueueMenuButtonClicked)
+        self.statisticsButton.configure(command=menuController.onStatisticsMenuButtonClicked)
 

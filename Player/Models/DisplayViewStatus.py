@@ -1,5 +1,6 @@
 from typing import List, Union, Tuple
 
+from Models.Data.Statistics import Statistics
 from Models.Database.AlbumDb import AlbumDb
 from Models.DisplayedView import DisplayedView
 from Models.Data.Music import Music
@@ -15,6 +16,7 @@ class DisplayViewStatus:
         self.albums: List[AlbumDb] = None
         self.queue: List[Union[Music, AlbumDb]] = None
         self.selectionInQueue: Tuple[int, int] = None
+        self.statistics: Statistics = None
 
     def clear(self):
         self.currentDisplayedView = DisplayedView.WELCOME_SCREEN
@@ -23,3 +25,4 @@ class DisplayViewStatus:
         self.albums: List[AlbumDb] = None
         self.queue: List[Union[Music, AlbumDb]] = None
         self.selectionInQueue: Tuple[int, int] = None
+        self.statistics: Statistics = None

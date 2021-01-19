@@ -10,6 +10,7 @@ from Views.AlbumsPanel import AlbumsPanel
 from Views.MusicPanel import MusicPanel
 from Views.OnlineRadiosPanel import OnlineRadiosPanel
 from Views.QueuePanel import QueuePanel
+from Views.StatisticsPanel import StatisticsPanel
 
 WELCOME_TEXT = 'Welcome to Song Player application!'
 
@@ -23,6 +24,7 @@ class DisplayPanel(Frame, IDisplayViewUpdatedListener):
         self.musicPanel: MusicPanel = None
         self.albumsPanel: AlbumsPanel = None
         self.queuePanel: QueuePanel = QueuePanel(self)
+        self.statisticsPanel: StatisticsPanel = StatisticsPanel(self)
 
         self.__viewInit()
 
@@ -61,3 +63,6 @@ class DisplayPanel(Frame, IDisplayViewUpdatedListener):
         elif status.currentDisplayedView is DisplayedView.QUEUE and self.queuePanel is not None:
             self.queuePanel.grid(row=0, column=0, sticky='NSWE')
             self.queuePanel.displayQueue(status.queue, status.selectionInQueue)
+        elif status.currentDisplayedView is DisplayedView.STATISTICS and self.statisticsPanel is not None:
+            self.statisticsPanel.grid(row=0, column=0, sticky='NSWE')
+            self.statisticsPanel.displayStatistics(status.statistics)

@@ -21,7 +21,9 @@ import json
 import os
 
 from Models.Services.AlbumService import AlbumService
+from Models.Services.PlayEntryService import PlayEntryService
 from Models.Services.SkipService import SkipService
+from Models.StatisticsModel import StatisticsModel
 
 RADIO_STATIONS_FILE = 'radioStations.json'
 NAME_KEY = 'name'
@@ -36,6 +38,7 @@ class MainModel(IDisplayViewUpdatedObservable, IPlayerStateListener):
         self.currentDisplayStatus = DisplayViewStatus()
         self.player = player
         self.musicQueue = QueueModel(LinearMusicSelector())
+        self.statisticsModel = StatisticsModel()
 
         self.player.addPlayerStateUpdatedListener(self)
 
@@ -112,6 +115,12 @@ class MainModel(IDisplayViewUpdatedObservable, IPlayerStateListener):
         self.currentDisplayStatus.selectionInQueue = self.musicQueue.selectedPosition
         self.__notifyDisplayViewUpdated()
 
+    def displayStatistics(self):
+        self.currentDisplayStatus.clear()
+        self.currentDisplayStatus.currentDisplayedView = DisplayedView.STATISTICS
+        self.statisticsModel.fillStatistics(self.currentDisplayStatus)
+        self.__notifyDisplayViewUpdated()
+
     def mainModelDeleteSkip(self, skip: SkipDb):
         skipService = SkipService()
         skipService.deleteSkipsForMusic(skip.id)
@@ -185,6 +194,9 @@ class MainModel(IDisplayViewUpdatedObservable, IPlayerStateListener):
         if music is None:
             self.player.clear()
         else:
+            playEntryService = PlayEntryService()
+            playEntryService.addEntryForMusic(music.path)
+
             self.player.setMusic(music.path)
             self.player.setTrackName(music.filename)
             self.player.play()

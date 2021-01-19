@@ -22,3 +22,7 @@ class IMenuController(ABC):
     @abstractmethod
     def onQueueMenuButtonClicked(self):
         raise NotImplementedError
+
+    @abstractmethod
+    def onStatisticsMenuButtonClicked(self):
+        raise NotImplementedError

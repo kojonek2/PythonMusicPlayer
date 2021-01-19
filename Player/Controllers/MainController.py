@@ -75,6 +75,9 @@ class MainController(IMenuController, IOnlineRadiosController, IPlayerController
     def onQueueMenuButtonClicked(self):
         self.mainModel.displayQueue()
 
+    def onStatisticsMenuButtonClicked(self):
+        self.mainModel.displayStatistics()
+
     def onSkipDeleteClicked(self, skip: SkipDb):
         self.mainModel.mainModelDeleteSkip(skip)
 
