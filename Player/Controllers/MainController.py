@@ -63,7 +63,8 @@ class MainController(IMenuController, IOnlineRadiosController, IPlayerController
         try:
             genre = self.classificationModel.predictGenre(file)
             messagebox.showinfo("Information", f"Genre: {genre}")
-        except:
+        except Exception as e:
+            print(e)
             messagebox.showerror("Error", "Could not predict genre!")
 
     def onMusicMenuButtonClicked(self):
